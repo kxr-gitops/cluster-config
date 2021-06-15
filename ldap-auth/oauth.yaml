@@ -1,0 +1,24 @@
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - ldap:
+      attributes:
+        email:
+        - mail
+        id:
+        - dn
+        name:
+        - cn
+        preferredUsername:
+        - uid
+      ca:
+        name: ca-config-map
+      insecure: false
+      url: ldaps://idm.h2.kxr.me/dc=h2,dc=kxr,dc=me?uid?sub?(objectclass=person)
+    mappingMethod: claim
+    name: ldapidp
+    type: LDAP
+
