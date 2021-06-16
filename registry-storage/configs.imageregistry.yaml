@@ -1,0 +1,15 @@
+apiVersion: imageregistry.operator.openshift.io/v1
+kind: Config
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: '3'
+  name: cluster
+spec:
+  managementState: Managed
+  logLevel: Normal
+  operatorLogLevel: Normal
+  proxy: {}
+  replicas: 1
+  storage:
+    pvc:
+      claim: registry-storage
