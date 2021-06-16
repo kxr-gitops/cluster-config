@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: openshift-image-registry
+  namespace: openshift-gitops
   generateName: patch-registry-storage-
   annotations:
     argocd.argoproj.io/hook: PostSync
@@ -16,6 +16,6 @@ spec:
         args:
           - "oc patch configs.imageregistry.operator.openshift.io cluster --type='json' --patch='[{\"op\": \"replace\", \"path\": \"/spec/storage\", \"value\":{}}]' && oc patch configs.imageregistry.operator.openshift.io cluster --type='merge' --patch='{\"spec\":{\"storage\":{\"pvc\":{\"claim\": \"registry-storage\"}}}}'"
       restartPolicy: Never
-      serviceAccount: cluster-image-registry-operator
-      serviceAccountName: cluster-image-registry-operator
+      serviceAccount: argocd-cluster-argocd-application-controller
+      serviceAccountName: argocd-cluster-argocd-application-controller
   backoffLimit: 2
