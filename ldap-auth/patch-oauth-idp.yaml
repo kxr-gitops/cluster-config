@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: openshift-gitops
+  generateName: patch-oauth-idp-
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+      - name: cli
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli
+        command: ["/bin/sh", "-c"]
+        args:
+          - "oc patch oauth.config.openshift.io/cluster --type=merge --patch='{\"spec\":{\"identityProviders\":[{\"ldap\":{\"attributes\":{\"email\":[\"mail\"],\"id\":[\"dn\"],\"name\":[\"cn\"],\"preferredUsername\":[\"uid\"]},\"ca\":{\"name\":\"ca-config-map\"},\"insecure\":false,\"url\":\"ldaps://idm.h2.kxr.me/dc=h2,dc=kxr,dc=me?uid?sub?(objectclass=person)\"},\"mappingMethod\":\"claim\",\"name\":\"ldapidp\",\"type\":\"LDAP\"}]}}'"
+      restartPolicy: Never
+      serviceAccount: argocd-cluster-argocd-application-controller
+      serviceAccountName: argocd-cluster-argocd-application-controller
+  backoffLimit: 2
