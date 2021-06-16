@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: openshift-image-registry
+  generateName: patch-registry-storage-
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+      - name: cli
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli
+        command: ["/bin/sh", "-c"]
+        args:
+          - "oc patch configs.imageregistry.operator.openshift.io cluster --type='json' --patch='[{\"op\": \"replace\", \"path\": \"/spec/storage\", \"value\":{}}]' && oc patch configs.imageregistry.operator.openshift.io cluster --type='merge' --patch='{\"spec\":{\"storage\":{\"pvc\":{\"claim\": \"registry-storage\"}}}}'"
+      restartPolicy: Never
+      serviceAccount: cluster-image-registry-operator
+      serviceAccountName: cluster-image-registry-operator
+  backoffLimit: 2
