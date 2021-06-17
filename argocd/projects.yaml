@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: projects
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: openshift-config
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: projects
+    repoURL: https://github.com/kxr-gitops/cluster-config.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated: {}
